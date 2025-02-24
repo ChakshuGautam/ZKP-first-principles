@@ -11,9 +11,10 @@ $$x = H("Chakshu") \mod q$$
 where $q$ is a large prime (we'll choose its value later).
 Here, $x$ is now a number that "represents" your name—but by itself it doesn't reveal that your name is $"Chakshu"$.
 
-Let's assume a simple hash that maps each letter A-Z (case-insensitive) to a number 1-26, then accumulates these values in a polynomial with base 27.
-in math:
+Let's assume a simple hash that maps each letter A-Z (case-insensitive) to a number 1-26, then accumulates these values in a polynomial with base 27. Or in symbolic match
+
 $$H(s) = \sum_{i=0}^{n} a_i \cdot 27^i$$
+
 where $a_i$ is the $i$-th letter of the string $s$ and $n$ is the length of the string. Don't read too much into this, it's just an over simplification. We will get into why this is a bad hash function later.
     
 For example, "CHAKSHU" is processed as:
@@ -24,7 +25,9 @@ The hash is computed as:
 
 $$21 + 8 \cdot 27^1 + 19 \cdot 27^2 + 11 \cdot 27^3 + 1 \cdot 27^4 + 8 \cdot 27^5 + 3 \cdot 27^6$$
 
-so $$H("Chakshu") = 1,277,813,765$$
+so:
+
+$$H("Chakshu") = 1,277,813,765$$
     
 Let's choose $q = 17$:
 
@@ -132,5 +135,5 @@ Let’s break down the verification equation step by step:
 - We have: $s = r + c \cdot x$
 - Then, using properties of exponentiation: $g^s = g^{r + c \cdot x} = g^r \cdot g^{c \cdot x} \ (\text{mod} \ p)$
 - Recall that $y = g^x,$ so: $g^{c \cdot x} = (g^x)^c = y^c$
-- Thus, we obtain: $ g^s = g^r \cdot y^c \equiv t \cdot y^c \ (\text{mod} \ p). $
-- Since the verifier knows $g$, $t$, and $y$, checking that $ g^s \equiv t \cdot y^c \ (\text{mod} \ p) $ ensures that you indeed used your secret $x$ in the computation of $s$.
+- Thus, we obtain: $g^s = g^r \cdot y^c \equiv t \cdot y^c \ (\text{mod} \ p)$
+- Since the verifier knows $g$, $t$, and $y$, checking that $g^s \equiv t \cdot y^c \ (\text{mod} \ p)$ ensures that you indeed used your secret $x$ in the computation of $s$.
