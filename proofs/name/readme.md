@@ -2,28 +2,29 @@
 
 Every string can be converted into a number. In cryptography we do this with a hash function. Think of a hash function 𝐻 as a black box that "scrambles" an input into a (typically) very large number in a fixed range.
 
-$$ string \ S = "Chakshu" $$
+$$string \ S = "Chakshu"$$
+
 We then compute:
-$$ x = H("Chakshu") \mod q $$
+$$x = H("Chakshu") \mod q$$
 where $q$ is a large prime (we'll choose its value later).
 Here, $x$ is now a number that "represents" your name—but by itself it doesn't reveal that your name is $"Chakshu"$.
 
 Let's assume a simple hash that maps each letter A-Z (case-insensitive) to a number 1-26, then accumulates these values in a polynomial with base 27.
 in math:
-$$ H(s) = \sum_{i=0}^{n} a_i \cdot 27^i $$
+$$H(s) = \sum_{i=0}^{n} a_i \cdot 27^i$$
 where $a_i$ is the $i$-th letter of the string $s$ and $n$ is the length of the string. Don't read too much into this, it's just an over simplification. We will get into why this is a bad hash function later.
     
 For example, "CHAKSHU" is processed as:
-$$ C -> 3, H -> 8, A -> 1, K -> 11, S -> 19, H -> 8, U -> 21. $$
+$$C -> 3, H -> 8, A -> 1, K -> 11, S -> 19, H -> 8, U -> 21$$
 
 The hash is computed as:
-$$ 21 + 8 \cdot 27^1 + 19 \cdot 27^2 + 11 \cdot 27^3 + 1 \cdot 27^4 + 8 \cdot 27^5 + 3 \cdot 27^6 $$
+$$21 + 8 \cdot 27^1 + 19 \cdot 27^2 + 11 \cdot 27^3 + 1 \cdot 27^4 + 8 \cdot 27^5 + 3 \cdot 27^6$$
 
-so H("Chakshu") = 1,277,813,765
+so $H("Chakshu") = 1,277,813,765$
     
 Let's choose $q = 17$:
 
-$$ x = H("Chakshu") \mod 17 $$
+$$x = H("Chakshu") \mod 17$$
 
 so $x = 13$
 
@@ -33,16 +34,16 @@ A [cyclic group](cyclic_groups.md) is like “clock arithmetic” but with a twi
 1. Pick large primes $p$ and $q$ (with $q$ dividing $p - 1$).  
 2. Pick a generator $g$ for the subgroup of $\mathbb{Z}_p^*$ of order $q$.  
 3. Compute the public value:  
-$$ y = g^x \mod p $$  
+$$y = g^x \mod p$$  
 This $y$ is made public while $x$ (which encodes your name) remains secret.  
 Why do this?  
 Because in our group the operation of exponentiation is “one-way” (it’s easy to compute $y = g^x$ but hard to recover $x$ from $y$). This is known as the discrete logarithm problem.
 
 In our [previous example](./cyclic_groups.md), we used:
 
-- $p = 23 $ (prime)
+- $p = 23$ (prime)
 - $\mathbb{Z}_{23}^*$ The multiplicative group of integers modulo 23
-- $g = 5 $ (generator)
+- $g = 5$ (generator)
 
 Let's map it to the concept of the "one-way" function:
 
@@ -62,35 +63,35 @@ Let's map it to the concept of the "one-way" function:
 
 ### The Schnorr Protocol
 **Proving Knowledge Without Revealing It** - Now we want to prove, in zero knowledge, that you know 
-$x$ such that: $$ y = g^x \mod p $$ but without revealing $x$ (or your name “Chakshu”).
+$x$ such that: $$y = g^x \mod p$$ but without revealing $x$ (or your name “Chakshu”).
 
 #### Step-by-step protocol
 
 1. **Commitment (Prover’s Step):**
 - Pick a random number $r$ from $\{0, 1, \ldots, q-1\}$.
-- Compute: $ t = g^r \mod p $
+- Compute: $t = g^r \mod p$
 - Send $t$ to the verifier.
 
 2. **Challenge (Verifier’s Step):**
 - The verifier picks a random challenge $c$ from a suitable set (often $\{0, 1, \ldots, q-1\}$ or a subset thereof) and sends $c$ to you.
 
 3. **Response (Prover’s Step):**
-- Compute the response: $ s = (r + c \cdot x) \mod q $
+- Compute the response: $s = (r + c \cdot x) \mod q$
 - Send $s$ to the verifier.
 
 4. **Verification (Verifier’s Check):**
-- The verifier computes: $ g^s \mod p $ and also computes: $ t \cdot y^c \mod p $
-- The verifier accepts the proof if: $ g^s \equiv t \cdot y^c \mod p $
+- The verifier computes: $g^s \mod p$ and also computes: $ t \cdot y^c \mod p$
+- The verifier accepts the proof if: $g^s \equiv t \cdot y^c \mod p$
 
 #### Example
 
 Using our previous values:
 
-- $p = 23 $ (prime)
-- $g = 5 $ (generator)
+- $p = 23$ (prime)
+- $g = 5$ (generator)
 - $x = 6$ (secret - hash of "Chakshu")
 - $y = 5^6 \mod 23 = 8$ (pulic value)
-- $ s = (r + c \cdot x) \mod q $
+- $s = (r + c \cdot x) \mod q$
 
 Here's how Chakshu proves she knows the secret 6 without revealing it:
 
@@ -126,8 +127,8 @@ A zero-knowledge proof has three main properties:
 ### Bonus: The mathematical proof
 Let’s break down the verification equation step by step:
 
-- We have: $ s = r + c \cdot x $
-- Then, using properties of exponentiation: $ g^s = g^{r + c \cdot x} = g^r \cdot g^{c \cdot x} \ (\text{mod} \ p). $
-- Recall that $ y = g^x, $ so: $ g^{c \cdot x} = (g^x)^c = y^c. $
+- We have: $s = r + c \cdot x$
+- Then, using properties of exponentiation: $g^s = g^{r + c \cdot x} = g^r \cdot g^{c \cdot x} \ (\text{mod} \ p)$
+- Recall that $y = g^x,$ so: $g^{c \cdot x} = (g^x)^c = y^c$
 - Thus, we obtain: $ g^s = g^r \cdot y^c \equiv t \cdot y^c \ (\text{mod} \ p). $
 - Since the verifier knows $g$, $t$, and $y$, checking that $ g^s \equiv t \cdot y^c \ (\text{mod} \ p) $ ensures that you indeed used your secret $x$ in the computation of $s$.
